@@ -73,3 +73,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#TODO: Rearrange layout into columns: birthday fun facts on the left and birthdays by weekday plot on the right 
+# (https://blog.streamlit.io/introducing-new-layout-options-for-streamlit/)
