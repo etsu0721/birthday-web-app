@@ -39,7 +39,7 @@ def main():
     # Get user's birthdate
     min_date = dt.datetime(1900, 1, 1)
     max_date = dt.datetime.today()
-    b_day = st.date_input('Enter your birthday', min_value=min_date, max_value=max_date)
+    b_day = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
 
     # Wait for user to click button to proceed
     if st.button('Calculate'):
