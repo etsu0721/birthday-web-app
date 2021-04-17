@@ -76,3 +76,10 @@ if __name__ == "__main__":
 
 #TODO: Rearrange layout into columns: birthday fun facts on the left and birthdays by weekday plot on the right 
 # (https://blog.streamlit.io/introducing-new-layout-options-for-streamlit/)
+#TODO: Include moon phase as a Birthday Fact
+#TODO: Include avg. gas price for birth year as a Birthday Fact
+#TODO: Celebrities with the same b-day as a Birthday Fact
+#TODO: Let user select timeframe (days) and have a dynamic table showing celebrities born within that timeframe
+#TODO: Species extention as a b-day fact
+#TODO: Most popular car, candy, etc. during birth year as b-day fact
+#TODO: Let user pick their favorite sport and return the team who won the championship in their birth year
