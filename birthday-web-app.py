@@ -7,6 +7,32 @@ import matplotlib.pyplot as plt
 
 wkday_word_map = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
 
+def calc_wkday_counts(today, b_day):
+    # Check if today is user's birthday. If so, wish a happy birthday
+    if (today.month == b_day.month) & (today.day == b_day.day):
+        st.markdown('### Happy birthday!!!')
+        st.balloons()
+
+    # Calculate birthdays by day of the week
+    mo = b_day.month
+    d = b_day.day
+
+    # If input birthday has not yet occurred this year, do not count it
+    if today < dt.datetime(today.year, mo, d).date():
+        b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year+1, today.year)]
+    # Otherwise, count it
+    else:
+        b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year+1, today.year+1)]
+    wkday_counts = (Counter(b_days))
+    
+    # Sort Counter object by weekday index for sorted bar plot labels
+    wkday_counts = OrderedDict(sorted(wkday_counts.items()))
+
+    # Map Counter object keys (integers representing weekdays) to weekday words: wkday_counts
+    wkday_counts = np.array([*map(lambda k: (wkday_word_map[k], wkday_counts[k]), wkday_counts.keys())])
+
+    return wkday_counts
+
 def plot_wkday_counts_bar_plt(wkday_counts):
     if len(wkday_counts) == 0:
         return
@@ -24,15 +50,27 @@ def plot_wkday_counts_bar_plt(wkday_counts):
         st.pyplot(fig)
     return
 
-def write_birthday_facts(b_day, today):
-    st.write('## Birthday facts')
+def write_age(today, b_day):
     age = today.year - b_day.year - ((today.month, today.day) < (b_day.month, b_day.day))
     age_str = 'You are {} years old.'.format(age)
+    st.write(age_str)
+    return
+
+def write_wkday_born(b_day):
     wkday_str = 'You were born on a {}.'.format(wkday_word_map[b_day.weekday()])
-    st.write(age_str, wkday_str)
+    st.write(wkday_str)
+    return
+
+def write_birthday_facts(today, b_day):
+    st.write('## Birthday facts')
+    write_age(today, b_day)
+    write_wkday_born(b_day)
     return
 
 def main():
+    # Use wide mode for app
+    st.set_page_config(layout="wide")
+
     # Display web app title
     st.title('Birthday Web App')
 
@@ -43,44 +81,29 @@ def main():
 
     # Wait for user to click button to proceed
     if st.button('Calculate'):
-
-        # Check if today is user's birthday
         today = dt.date.today()
-        if (today.month == b_day.month) & (today.day == b_day.day):
-            st.write('### Happy birthday!!!')
-            st.balloons()
 
-        # Calculate birthdays by day of the week
-        mo = b_day.month
-        d = b_day.day
+        # Create two columns
+        col1, col2 = st.beta_columns(2)
 
-        # If input birthday has not yet occurred this year, do not count it
-        if today < dt.datetime(today.year, mo, d).date():
-            b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year+1, today.year)]
-        # Otherwise, count it
-        else:
-            b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year+1, today.year+1)]
-        wkday_counts = (Counter(b_days))
-        
-        # Sort Counter object by weekday index for sorted bar plot labels
-        wkday_counts = OrderedDict(sorted(wkday_counts.items()))
-
-        # Map Counter object keys (integers representing weekdays) to weekday words: wkday_counts
-        wkday_counts = np.array([*map(lambda k: (wkday_word_map[k], wkday_counts[k]), wkday_counts.keys())])
+        # Calculate birthdays by weekday
+        wkday_counts = calc_wkday_counts(today, b_day)
 
         # Plot wkday_counts as bar plot
-        plot_wkday_counts_bar_plt(wkday_counts)
+        with col1:
+            plot_wkday_counts_bar_plt(wkday_counts)
 
         # Write birthday and age facts
-        write_birthday_facts(b_day, today)
+        with col2:
+            write_birthday_facts(today, b_day)
+        
     return
 
 if __name__ == "__main__":
     main()
 
-#TODO: Rearrange layout into columns: birthday fun facts on the left and birthdays by weekday plot on the right 
-# (https://blog.streamlit.io/introducing-new-layout-options-for-streamlit/)
-#TODO: Include moon phase as a Birthday Fact
+#TODO: Include moon phase as a Birthday Fact (https://www.moonpage.com) - birthday year, month, and day can be passed into this 
+# site's URL
 #TODO: Include avg. gas price for birth year as a Birthday Fact
 #TODO: Celebrities with the same b-day as a Birthday Fact
 #TODO: Let user select timeframe (days) and have a dynamic table showing celebrities born within that timeframe
