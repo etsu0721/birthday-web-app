@@ -3,8 +3,8 @@ This app meant for a user to select their birthday and have some fun birthday fa
 
 ## Fun birthday facts list
 * Bar plot of birthdays by weekday
-* User's age
-* Weekday user was born
+* Age
+* Weekday born
 
 Reach out to me if you have an idea about a fun birthday fact to include: elisutton0721@gmail.com.
 
