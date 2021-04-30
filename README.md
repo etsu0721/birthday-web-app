@@ -1,5 +1,5 @@
 # Birthday Web App
-This app meant for a user to select their birthday and have some fun birthday facts calculated for them. 
+This app is a way for me to share my passion for coding with my family and friends on their special day: their birthday! 
 
 ## Fun birthday facts list
 * Bar plot of birthdays by weekday
