@@ -1,7 +1,7 @@
 # Birthday Web App
 This app is a way for me to share my passion for coding with my family and friends on their special day: their birthday! 
 
-## Fun birthday facts list
+## Fun birthday facts
 * Bar plot of birthdays by weekday
 * Age
 * Weekday born
