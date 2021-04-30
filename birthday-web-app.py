@@ -1,6 +1,6 @@
 import streamlit as st
 import datetime as dt
-from collections import Counter
+from collections import Counter, OrderedDict
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -54,12 +54,16 @@ def main():
         mo = b_day.month
         d = b_day.day
 
-        # Account for birthdays that have/have not already occurred this year
+        # If input birthday has not yet occurred this year, do not count it
         if today < dt.datetime(today.year, mo, d).date():
-            b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year, today.year-1)]
+            b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year+1, today.year)]
+        # Otherwise, count it
         else:
-            b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year, today.year)]
-        wkday_counts = Counter(b_days)
+            b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year+1, today.year+1)]
+        wkday_counts = (Counter(b_days))
+        
+        # Sort Counter object by weekday index for sorted bar plot labels
+        wkday_counts = OrderedDict(sorted(wkday_counts.items()))
 
         # Map Counter object keys (integers representing weekdays) to weekday words: wkday_counts
         wkday_counts = np.array([*map(lambda k: (wkday_word_map[k], wkday_counts[k]), wkday_counts.keys())])
