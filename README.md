@@ -1,12 +1,18 @@
 # Birthday Web App
-This app is a way for me to share my passion for coding with my family and friends on their special day: their birthday! 
+Combining...
+* data collection, processing, and visualization,
+* custom web app, and
+* custom animations 
+to produce a personalized digital birthday wish.
 
-## Fun birthday facts
-* Bar plot of birthdays by weekday
+## Description
+
+## Birthday Fun Facts
+* Birthdays by weekday
 * Age
 * Weekday born
 
-Reach out to me with fun birthday fact ideas: elisutton0721@gmail.com.
+Got a birthday fun fact idea? Send it to elisutton0721@gmail.com
 
 ## Date bounds
 The user can select from the current date to as far back as January 1, 1900.
