@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime as dt
+import pytz
 from collections import Counter, OrderedDict
 import pandas as pd
 import numpy as np
@@ -10,7 +11,6 @@ wkday_word_map = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: '
 def calc_wkday_counts(today, b_day):
     # Check if today is user's birthday. If so, wish a happy birthday
     if (today.month == b_day.month) & (today.day == b_day.day):
-        st.markdown('### Happy birthday!!!')
         st.balloons()
 
     # Calculate birthdays by day of the week
@@ -75,13 +75,15 @@ def main():
     st.title('Birthday Web App')
 
     # Get user's birthdate
+    tz = pytz.timezone('UTC')   
+    max_date = tz.localize(dt.datetime.today()) # Ensure max date is based on user's timezone
     min_date = dt.datetime(1900, 1, 1)
-    max_date = dt.datetime.today()
     b_day = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
+    b_day = tz.localize(dt.datetime.combine(b_day, dt.datetime.min.time()))
 
     # Wait for user to click button to proceed
     if st.button('Calculate'):
-        today = dt.date.today()
+        today = dt.datetime.utcnow().date()
 
         # Create two columns
         col1, col2 = st.beta_columns(2)
