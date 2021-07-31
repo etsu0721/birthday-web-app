@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
 
+TZ = pytz.timezone('EST5EDT')
 wkday_word_map = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
 
 def count_bdays_by_wkday(today, birthday):
@@ -89,10 +90,8 @@ def setup_webpage():
     return
 
 def get_user_birthdate():
-    tz = pytz.timezone('EST5EDT')
     min_date = dt.datetime(1900, 1, 1)
-    max_date = dt.datetime.now(tz)
-    print(max_date.tzinfo, max_date)
+    max_date = dt.datetime.now(TZ)
     birthday = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
     return birthday
 
@@ -101,7 +100,7 @@ def main():
     birthday = get_user_birthdate()
 
     if st.button('Calculate'):     # Upon user to clicking button
-        today = dt.datetime.today().date()
+        today = dt.datetime.now(TZ).date()
         col1, col2 = st.beta_columns(2)  # Create two columns
         wkday_counts = count_bdays_by_wkday(today, birthday)
         with col1:
