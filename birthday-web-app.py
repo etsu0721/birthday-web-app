@@ -1,29 +1,31 @@
+from random import betavariate
+from threading import main_thread
 import streamlit as st
 import datetime as dt
-import pytz
 from collections import Counter, OrderedDict
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import requests
+from bs4 import BeautifulSoup
 
 wkday_word_map = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
 
-def calc_wkday_counts(today, b_day):
-    # Check if today is user's birthday. If so, wish a happy birthday
-    if (today.month == b_day.month) & (today.day == b_day.day):
+def count_bdays_by_wkday(today, birthday):
+    # Check if it is the user's birthday
+    if (today.month == birthday.month) & (today.day == birthday.day):
         st.balloons()
 
-    # Calculate birthdays by day of the week
-    mo = b_day.month
-    d = b_day.day
+    mo = birthday.month
+    d = birthday.day
 
     # If input birthday has not yet occurred this year, do not count it
     if today < dt.datetime(today.year, mo, d).date():
-        b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year+1, today.year)]
+        birthdays = [dt.datetime(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year)]
     # Otherwise, count it
     else:
-        b_days = [dt.datetime(yr, mo, d).date().weekday() for yr in range(b_day.year+1, today.year+1)]
-    wkday_counts = (Counter(b_days))
+        birthdays = [dt.datetime(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year+1)]
+    wkday_counts = (Counter(birthdays))
     
     # Sort Counter object by weekday index for sorted bar plot labels
     wkday_counts = OrderedDict(sorted(wkday_counts.items()))
@@ -50,63 +52,67 @@ def plot_wkday_counts_bar_plt(wkday_counts):
         st.pyplot(fig)
     return
 
-def write_age(today, b_day):
-    age = today.year - b_day.year - ((today.month, today.day) < (b_day.month, b_day.day))
-    age_str = 'You are {} years old.'.format(age)
+def write_age(today, birthday):
+    age = today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
+    age_str = 'You are **{}** years old.'.format(age)
     st.write(age_str)
     return
 
-def write_wkday_born(b_day):
-    wkday_str = 'You were born on a {}.'.format(wkday_word_map[b_day.weekday()])
+def write_wkday_born(birthday):
+    wkday_str = 'You were born on a **{}**.'.format(wkday_word_map[birthday.weekday()])
     st.write(wkday_str)
     return
 
-def write_birthday_facts(today, b_day):
-    st.write('## Birthday facts')
-    write_age(today, b_day)
-    write_wkday_born(b_day)
+def write_moon_phase(yr, mo, day):
+    url = 'https://www.moongiant.com/phase/{}'.format('/'.join((mo, day, yr)))
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    phase_details = soup.find(name='div', attrs={'id':'moonDetails'})
+    moon_phase = phase_details.find_next(name='span').text
+    illumination = phase_details.find_next(name='span').find_next(name='span').text
+    moon_phase_str = 'On your birthdate, \
+        the moon was in the **{}** phase at **{}** illumination. ([source]({}))'.format(moon_phase, illumination, url)
+    st.write(moon_phase_str)
     return
 
-def main():
-    # Use wide mode for app
+def write_birthday_facts(today, birthday):
+    st.write('## Birthday facts')
+    write_age(today, birthday)
+    write_wkday_born(birthday)
+    write_moon_phase(str(birthday.year), str(birthday.month), str(birthday.day))
+    return
+
+def setup_webpage():
     st.set_page_config(layout="wide")
-
-    # Display web app title
     st.title('Birthday Web App')
+    return
 
-    # Get user's birthdate
-    tz = pytz.timezone('UTC')   
-    max_date = tz.localize(dt.datetime.today()) # Ensure max date is based on user's timezone
+def get_user_birthdate():
     min_date = dt.datetime(1900, 1, 1)
-    b_day = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
-    b_day = tz.localize(dt.datetime.combine(b_day, dt.datetime.min.time()))
+    max_date = dt.datetime.today()
+    print(max_date)
+    birthday = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
+    return birthday
 
-    # Wait for user to click button to proceed
-    if st.button('Calculate'):
-        today = dt.datetime.utcnow().date()
+def main():
+    setup_webpage()
+    birthday = get_user_birthdate()
 
-        # Create two columns
-        col1, col2 = st.beta_columns(2)
-
-        # Calculate birthdays by weekday
-        wkday_counts = calc_wkday_counts(today, b_day)
-
-        # Plot wkday_counts as bar plot
+    if st.button('Calculate'):     # Upon user to clicking button
+        today = dt.datetime.today().date()
+        col1, col2 = st.beta_columns(2)  # Create two columns
+        wkday_counts = count_bdays_by_wkday(today, birthday)
         with col1:
             plot_wkday_counts_bar_plt(wkday_counts)
-
-        # Write birthday and age facts
         with col2:
-            write_birthday_facts(today, b_day)
-        
+            write_birthday_facts(today, birthday)
+    
     return
 
 if __name__ == "__main__":
     main()
 
-#TODO: Include moon phase as a Birthday Fact (https://www.moonpage.com) - birthday year, month, and day can be passed into this 
-# site's URL
-#TODO: Include avg. gas price for birth year as a Birthday Fact
+
 #TODO: Celebrities with the same b-day as a Birthday Fact
 #TODO: Let user select timeframe (days) and have a dynamic table showing celebrities born within that timeframe
 #TODO: Species extention as a b-day fact
