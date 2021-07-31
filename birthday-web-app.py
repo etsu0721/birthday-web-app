@@ -91,7 +91,7 @@ def setup_webpage():
 
 def get_user_birthdate():
     min_date = dt.datetime(1900, 1, 1)
-    max_date = dt.datetime.now(TZ)
+    max_date = dt.datetime.now(TZ).date()
     birthday = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
     return birthday
 
