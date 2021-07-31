@@ -2,6 +2,7 @@ from random import betavariate
 from threading import main_thread
 import streamlit as st
 import datetime as dt
+import pytz
 from collections import Counter, OrderedDict
 import pandas as pd
 import numpy as np
@@ -88,9 +89,10 @@ def setup_webpage():
     return
 
 def get_user_birthdate():
+    tz = pytz.timezone('EST5EDT')
     min_date = dt.datetime(1900, 1, 1)
-    max_date = dt.datetime.today()
-    print(max_date)
+    max_date = dt.datetime.now(tz)
+    print(max_date.tzinfo, max_date)
     birthday = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
     return birthday
 
