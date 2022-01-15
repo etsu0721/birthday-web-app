@@ -1,6 +1,3 @@
-from random import betavariate
-from threading import main_thread
-from turtle import up
 import streamlit as st
 from datetime import datetime as dt
 import pytz
