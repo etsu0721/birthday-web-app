@@ -1,7 +1,8 @@
 from random import betavariate
 from threading import main_thread
+from turtle import up
 import streamlit as st
-import datetime as dt
+from datetime import datetime as dt
 import pytz
 from collections import Counter, OrderedDict
 import pandas as pd
@@ -22,11 +23,11 @@ def count_bdays_by_wkday(today, birthday):
     d = birthday.day
 
     # If input birthday has not yet occurred this year, do not count it
-    if today < dt.datetime(today.year, mo, d).date():
-        birthdays = [dt.datetime(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year)]
+    if today < dt(today.year, mo, d).date():
+        birthdays = [dt(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year)]
     # Otherwise, count it
     else:
-        birthdays = [dt.datetime(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year+1)]
+        birthdays = [dt(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year+1)]
     wkday_counts = (Counter(birthdays))
     
     # Sort Counter object by weekday index for sorted bar plot labels
@@ -77,11 +78,21 @@ def write_moon_phase(yr, mo, day):
     st.write(moon_phase_str)
     return
 
-def write_birthday_facts(today, birthday):
+def write_zodiac_sign(birthday, signs_df):
+    for sign in signs_df.itertuples():
+        lower_bound = dt(birthday.year, sign.start_month, sign.start_day).date()
+        upper_bound = dt(birthday.year, sign.end_month, sign.end_day).date()
+        if lower_bound <= birthday <= upper_bound:
+            st.write('Your Zodiac sign is **{}**.'.format(sign.zodiac_sign))
+            break
+    return
+
+def write_birthday_facts(today, birthday, signs_df):
     st.write('## Birthday facts')
     write_age(today, birthday)
     write_wkday_born(birthday)
     write_moon_phase(str(birthday.year), str(birthday.month), str(birthday.day))
+    write_zodiac_sign(birthday, signs_df)
     return
 
 def setup_webpage():
@@ -90,23 +101,24 @@ def setup_webpage():
     return
 
 def get_user_birthdate():
-    min_date = dt.datetime(1900, 1, 1)
-    max_date = dt.datetime.now(TZ).date()
+    min_date = dt(1900, 1, 1)
+    max_date = dt.now(TZ).date()
     birthday = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
     return birthday
 
 def main():
     setup_webpage()
     birthday = get_user_birthdate()
+    signs_df = pd.read_excel('Zodiac-Signs.xlsx', engine='openpyxl')
 
     if st.button('Calculate'):     # Upon user to clicking button
-        today = dt.datetime.now(TZ).date()
+        today = dt.now(TZ).date()
         col1, col2 = st.beta_columns(2)  # Create two columns
         wkday_counts = count_bdays_by_wkday(today, birthday)
         with col1:
             plot_wkday_counts_bar_plt(wkday_counts)
         with col2:
-            write_birthday_facts(today, birthday)
+            write_birthday_facts(today, birthday, signs_df)
     
     return
 
