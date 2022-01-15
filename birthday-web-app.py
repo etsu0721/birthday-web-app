@@ -110,7 +110,7 @@ def main():
 
     if st.button('Calculate'):     # Upon user to clicking button
         today = dt.now(TZ).date()
-        col1, col2 = st.beta_columns(2)  # Create two columns
+        col1, col2 = st.columns(2)  # Create two columns
         wkday_counts = count_bdays_by_wkday(today, birthday)
         with col1:
             plot_wkday_counts_bar_plt(wkday_counts)
