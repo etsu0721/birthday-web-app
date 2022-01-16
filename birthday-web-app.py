@@ -113,7 +113,8 @@ def main():
             'start_day': 'int64',
             'end_month': 'int64',
             'end_day': 'int64'
-        })
+        }
+    )
 
     if st.button('Calculate'):     # Upon user to clicking button
         today = dt.now(TZ).date()
