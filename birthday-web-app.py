@@ -92,10 +92,6 @@ def write_birthday_facts(today, birthday, signs_df):
     write_zodiac_sign(birthday, signs_df)
     return
 
-def setup_webpage():
-    st.set_page_config(layout="wide")
-    st.title('Birthday Web App')
-    return
 
 def get_user_birthdate():
     min_date = dt(1900, 1, 1)
@@ -104,7 +100,10 @@ def get_user_birthdate():
     return birthday
 
 def main():
-    setup_webpage()
+    st.set_page_config(
+        page_title='Birthday Fun Facts',
+        layout='wide'
+    )
     birthday = get_user_birthdate()
     signs_df = pd.read_csv(
         'Zodiac-Signs.csv', 
