@@ -36,14 +36,16 @@ def count_bdays_by_wkday(today, birthday):
     return wkday_counts
 
 def plot_wkday_counts_bar_plt(wkday_counts):
+    st.write('## Number of birthdays by day of week')
     if len(wkday_counts) == 0:
+        st.write('You are wise beyond your months (no birthdays yet)')
         return
     else:
-        x_coord = np.arange(len(wkday_counts))
+        x_coords = np.arange(len(wkday_counts))
         heights = wkday_counts[:, 1].astype(int)
         labels = wkday_counts[:, 0]
         fig, ax = plt.subplots()
-        ax.bar(x_coord, heights, tick_label=labels)
+        ax.bar(x_coords, heights, tick_label=labels)
         plt.title('Number of birthdays by day of week')
         plt.ylabel('Frequency')
         y_range = [*range(heights.max()+1)]
@@ -85,17 +87,16 @@ def write_zodiac_sign(birthday, signs_df):
     return
 
 def write_birthday_facts(today, birthday, signs_df):
-    st.write('## Birthday facts')
+    st.write('## Fun facts')
     write_age(today, birthday)
     write_wkday_born(birthday)
     write_moon_phase(str(birthday.year), str(birthday.month), str(birthday.day))
     write_zodiac_sign(birthday, signs_df)
     return
 
-
 def get_user_birthdate():
-    min_date = dt(1900, 1, 1)
-    max_date = dt.now(TZ).date()
+    min_date = dt(1900, 1, 1).date()
+    max_date = dt.today().date()
     birthday = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
     return birthday
 
@@ -116,7 +117,7 @@ def main():
     )
 
     if st.button('Calculate'):     # Upon user to clicking button
-        today = dt.now(TZ).date()
+        today = dt.now().date()
         col1, col2 = st.columns(2)  # Create two columns
         wkday_counts = count_bdays_by_wkday(today, birthday)
         with col1:
