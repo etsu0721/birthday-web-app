@@ -1,6 +1,5 @@
 import streamlit as st
 from datetime import datetime as dt
-import pytz
 from collections import Counter, OrderedDict
 import pandas as pd
 import numpy as np
@@ -8,7 +7,6 @@ import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
 
-TZ = pytz.timezone('EST5EDT')
 wkday_word_map = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
 
 def count_bdays_by_wkday(today, birthday):
@@ -96,7 +94,7 @@ def write_birthday_facts(today, birthday, signs_df):
 
 def get_user_birthdate():
     min_date = dt(1900, 1, 1)
-    max_date = dt.now(TZ)
+    max_date = dt.today()
     birthday = st.date_input(
         'Select your birthday', 
         min_value=min_date, 
