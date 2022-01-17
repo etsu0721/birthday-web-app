@@ -95,9 +95,13 @@ def write_birthday_facts(today, birthday, signs_df):
     return
 
 def get_user_birthdate():
-    min_date = dt(1900, 1, 1).date()
-    max_date = dt.today().date()
-    birthday = st.date_input('Select your birthday', min_value=min_date, max_value=max_date)
+    min_date = dt(1900, 1, 1)
+    max_date = dt.now(TZ)
+    birthday = st.date_input(
+        'Select your birthday', 
+        min_value=min_date, 
+        max_value=max_date,
+        help='Be sure to *select* a birthdate, not *type*.')
     return birthday
 
 def main():
