@@ -10,9 +10,8 @@ from bs4 import BeautifulSoup
 wkday_word_map = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
 
 def count_bdays_by_wkday(today, birthday):
-    # Check if it is the user's birthday
-    if (today.month == birthday.month) & (today.day == birthday.day):
-        st.balloons()
+    # Display balloons animation
+    st.balloons()
 
     mo = birthday.month
     d = birthday.day
@@ -71,7 +70,7 @@ def write_moon_phase(yr, mo, day):
     moon_phase = phase_details.find_next(name='span').text
     illumination = phase_details.find_next(name='span').find_next(name='span').text
     moon_phase_str = 'On your birthdate, \
-        the moon was in the **{}** phase at **{}** illumination. ([source]({}))'.format(moon_phase, illumination, url)
+        the moon was in the **{}** phase at **{}** illumination. ([source]({}))'.format(moon_phase, illumination.strip(), url)
     st.write(moon_phase_str)
     return
 
@@ -80,7 +79,7 @@ def write_zodiac_sign(birthday, signs_df):
         lower_bound = dt(birthday.year, sign.start_month, sign.start_day).date()
         upper_bound = dt(birthday.year, sign.end_month, sign.end_day).date()
         if lower_bound <= birthday <= upper_bound:
-            st.write('Your Zodiac sign is **{}**.'.format(sign.zodiac_sign))
+            st.write('Your Zodiac sign is **{}**. (Special thanks to KP for her contributions)'.format(sign.zodiac_sign))
             break
     return
 
@@ -103,10 +102,9 @@ def get_user_birthdate():
     return birthday
 
 def main():
-    st.set_page_config(
-        page_title='Birthday Fun Facts',
-        layout='wide'
-    )
+    st.set_page_config(layout='wide')
+    st.title('Birthday Fun Facts')
+    
     birthday = get_user_birthdate()
     signs_df = pd.read_csv(
         'Zodiac-Signs.csv', 
