@@ -98,7 +98,7 @@ def get_user_birthdate():
         'Select your birthday', 
         min_value=min_date, 
         max_value=max_date,
-        help='Be sure to *select* a birthdate, not *type*.')
+        help='Be sure to **select** a birthdate *or* type a birthdate in the following format: **YYYY/MM/DD**')
     return birthday
 
 def main():
