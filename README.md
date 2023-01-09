@@ -4,7 +4,8 @@
 * Birthdays by weekday
 * Age
 * Weekday born
-* Moon phase
+* Moon phase & illumination
+* Zodiac sign
 
 Got a birthday fun fact idea? Send it to elisutton0721@gmail.com
 
