@@ -107,7 +107,7 @@ def main():
     
     birthday = get_user_birthdate()
     signs_df = pd.read_csv(
-        'Zodiac-Signs.csv', 
+        'data/Zodiac-Signs.csv', 
         dtype={
             'start_month': 'int64',
             'start_day': 'int64',
