@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
+import calendar
+import re
 
 wkday_word_map = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
 
@@ -21,7 +23,7 @@ def count_bdays_by_wkday(today, birthday):
         birthdays = [dt(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year)]
     # Otherwise, count it
     else:
-        birthdays = [dt(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year+1)]
+        birthdays = [dt(yr, mo, d).date().weekday() for yr in range(birthday.year+1, today.year + 1)]
     wkday_counts = (Counter(birthdays))
     
     # Sort Counter object by weekday index for sorted bar plot labels
@@ -35,7 +37,7 @@ def count_bdays_by_wkday(today, birthday):
 def plot_wkday_counts_bar_plt(wkday_counts):
     st.write('## Number of birthdays by day of week')
     if len(wkday_counts) == 0:
-        st.write('You are wise beyond your months (no birthdays yet)')
+        st.write('You are wise beyond your years (no birthdays yet).')
         return
     else:
         x_coords = np.arange(len(wkday_counts))
@@ -87,7 +89,49 @@ def write_zodiac_sign(birthday, signs_df):
     return
 
 def write_famous_birthdays(birthday):
-    pass
+
+    # Get URL parameters
+    mo = str(calendar.month_name[birthday.month]).lower() # full month name
+    day = str(birthday.day)
+
+    # Parse URL
+    url = 'https://www.famousbirthdays.com/{0}{1}.html'.format(mo, day)
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Initialize dict to store famous people data
+    data = {
+        'Rank': [],
+        'Name': [],
+        'Age': [],
+        'Occupation': []
+    }
+
+    a_tags = soup.find_all(name='a', attrs={'class':'face person-item clearfix'})
+    for ele in a_tags:
+        # Get data elements
+        rank = ele.findChild('span', attrs={'class': 'rank'}).text.strip()
+        name_and_age = ele.findChild('div', attrs={'class': 'name'}).text.strip()
+        name, age = re.split(', | \(', name_and_age)
+        age_cleaned = age.replace(')', '')
+        if (val := ele.findChild('div', attrs={'class': 'title'})) is not None:
+            title = val.text.strip()
+        else:
+            title = ''
+        
+        # Store data elements
+        data['Rank'].append(rank)
+        data['Name'].append(name)
+        data['Age'].append(age_cleaned)
+        data['Occupation'].append(title)
+    
+    df = pd.DataFrame(data)
+    df['Rank'] = pd.to_numeric(df['Rank'])
+
+    st.write('You share a birthday with these ***famous* people** ([source]({})):'.format(url))
+    st.dataframe(data=df, use_container_width=True)
+
+    return
 
 def write_birthday_facts(today, birthday, signs_df):
     st.write('## Fun facts')
@@ -132,14 +176,15 @@ def main():
         col1, col2 = st.columns(2)  # Create two columns
         wkday_counts = count_bdays_by_wkday(today, birthday)
         with col1:
-            plot_wkday_counts_bar_plt(wkday_counts)
-        with col2:
             st.write('## Fun facts')
             write_age(today, birthday)
             write_wkday_born(birthday)
             write_moon_phase(birthday)
             write_zodiac_sign(birthday, signs_df)
+            write_famous_birthdays(birthday)
             # write_birthday_facts(today, birthday, signs_df)
+        with col2:
+            plot_wkday_counts_bar_plt(wkday_counts)
     
     return
 
