@@ -133,14 +133,6 @@ def write_famous_birthdays(birthday):
 
     return
 
-def write_birthday_facts(today, birthday, signs_df):
-    st.write('## Fun facts')
-    write_age(today, birthday)
-    write_wkday_born(birthday)
-    write_moon_phase(str(birthday.year), str(birthday.month), str(birthday.day))
-    write_zodiac_sign(birthday, signs_df)
-    return
-
 def get_user_birthdate():
     """Creates widget for user to supply their birthdate with date constraints.
 
@@ -182,7 +174,6 @@ def main():
             write_moon_phase(birthday)
             write_zodiac_sign(birthday, signs_df)
             write_famous_birthdays(birthday)
-            # write_birthday_facts(today, birthday, signs_df)
         with col2:
             plot_wkday_counts_bar_plt(wkday_counts)
     
@@ -192,7 +183,6 @@ if __name__ == "__main__":
     main()
 
 
-#TODO: Let user select timeframe (days) and have a dynamic table showing celebrities born within that timeframe
 #TODO: Species extention as a b-day fact
 #TODO: Most popular car, candy, etc. during birth year as b-day fact
 #TODO: Let user pick their favorite sport and return the team who won the championship in their birth year
