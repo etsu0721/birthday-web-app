@@ -62,7 +62,10 @@ def write_wkday_born(birthday):
     st.write(wkday_str)
     return
 
-def write_moon_phase(yr, mo, day):
+def write_moon_phase(birthday):
+    yr = str(birthday.year)
+    mo = str(birthday.month)
+    day = str(birthday.day)
     url = 'https://www.moongiant.com/phase/{}'.format('/'.join((mo, day, yr)))
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -83,6 +86,9 @@ def write_zodiac_sign(birthday, signs_df):
             break
     return
 
+def write_famous_birthdays(birthday):
+    pass
+
 def write_birthday_facts(today, birthday, signs_df):
     st.write('## Fun facts')
     write_age(today, birthday)
@@ -92,6 +98,11 @@ def write_birthday_facts(today, birthday, signs_df):
     return
 
 def get_user_birthdate():
+    """Creates widget for user to supply their birthdate with date constraints.
+
+    Returns:
+        datetime.date : User's birthdate.
+    """
     min_date = dt(1900, 1, 1)
     max_date = dt.today()
     birthday = st.date_input(
@@ -104,8 +115,6 @@ def get_user_birthdate():
 def main():
     st.set_page_config(layout='wide')
     st.title('Birthday Fun Facts')
-    
-    birthday = get_user_birthdate()
     signs_df = pd.read_csv(
         'data/Zodiac-Signs.csv', 
         dtype={
@@ -115,6 +124,8 @@ def main():
             'end_day': 'int64'
         }
     )
+    
+    birthday = get_user_birthdate()
 
     if st.button('Calculate'):     # Upon user to clicking button
         today = dt.now().date()
@@ -123,7 +134,12 @@ def main():
         with col1:
             plot_wkday_counts_bar_plt(wkday_counts)
         with col2:
-            write_birthday_facts(today, birthday, signs_df)
+            st.write('## Fun facts')
+            write_age(today, birthday)
+            write_wkday_born(birthday)
+            write_moon_phase(birthday)
+            write_zodiac_sign(birthday, signs_df)
+            # write_birthday_facts(today, birthday, signs_df)
     
     return
 
@@ -131,7 +147,6 @@ if __name__ == "__main__":
     main()
 
 
-#TODO: Celebrities with the same b-day as a Birthday Fact
 #TODO: Let user select timeframe (days) and have a dynamic table showing celebrities born within that timeframe
 #TODO: Species extention as a b-day fact
 #TODO: Most popular car, candy, etc. during birth year as b-day fact
